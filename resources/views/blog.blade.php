@@ -30,6 +30,7 @@
                         <th>Title</th>
                         <th>Image</th>
                         <th>Tags</th>
+                        <th>Categories</th>
                         <th>Rating</th>
                         <th>Comments</th>
                         <th>Action</th>
@@ -48,6 +49,11 @@
                                 <td>
                                     @foreach ($blog->tags as $tag)
                                     <div>{{ $tag->name }}</div>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach ($blog->categories as $category)
+                                    <div>{{ $category->name }}</div>
                                     @endforeach
                                 </td>
                                 <td>

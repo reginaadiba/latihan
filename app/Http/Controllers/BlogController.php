@@ -21,7 +21,7 @@ class BlogController extends Controller
         //     ->paginate(10);
 
         //Eloquent ORM
-        $blogs = Blog::with(['tags', 'comments', 'image', 'ratings'])
+        $blogs = Blog::with(['tags', 'comments', 'image', 'ratings', 'categories'])
             ->where('title', 'LIKE', '%'.$title.'%')
             // ->withTrashed()
             ->orderBy('id', 'asc')
