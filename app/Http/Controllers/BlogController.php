@@ -21,10 +21,14 @@ class BlogController extends Controller
         //     ->paginate(10);
 
         //Eloquent ORM
-        $blogs = Blog::where('title', 'LIKE', '%'.$title.'%')
+        $blogs = Blog::with(['tags', 'comments', 'image', 'ratings'])
+            ->where('title', 'LIKE', '%'.$title.'%')
             // ->withTrashed()
-            ->orderBy('id', 'desc')
+            ->orderBy('id', 'asc')
             ->paginate(10);
+
+        // return $blogs;
+
         // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
         return view('blog', [
             'blogs' => $blogs,

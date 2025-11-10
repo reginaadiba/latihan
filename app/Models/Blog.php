@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Blog extends Model
 {
@@ -48,5 +50,15 @@ class Blog extends Model
     {
         // return $this->belongsToMany(Tag::class, 'blog_tag', 'blog_id', 'tag_id');
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function image(): MorphOne
+    {
+        return $this->morphOne(Image::class, 'imageable');
+    }
+
+    public function ratings(): MorphMany
+    {
+        return $this->morphMany(Rating::class, 'ratingable');
     }
 }
