@@ -28,6 +28,10 @@
                     <thead>
                         <th>#</th>
                         <th>Title</th>
+                        <th>Image</th>
+                        <th>Tags</th>
+                        <th>Rating</th>
+                        <th>Comments</th>
                         <th>Action</th>
                     </thead>
                     <tbody class="table-group-divider">
@@ -40,6 +44,24 @@
                             <tr>
                                 <td>{{ ($blogs->currentpage()-1) * $blogs->perpage() + $loop->index + 1 }}</td>
                                 <td>{{ $blog->title }}</td>
+                                <td>{{ $blog->image->name ?? '' }}</td>
+                                <td>
+                                    @foreach ($blog->tags as $tag)
+                                    <div>{{ $tag->name }}</div>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @if ($blog->ratings->count() < 1)
+                                        not rated yet
+                                    @else
+                                        {{ collect($blog->ratings->pluck('rating_value'))->avg()}}
+                                    @endif
+                                </td>
+                                <td>
+                                    @foreach ($blog->comments as $comment)
+                                    <div>{{ $comment->comment_text }}</div>
+                                    @endforeach
+                                </td>
                                 <td>
                                     <a href="{{ url('blog/'.$blog->id.'/detail') }}">View</a> | 
                                     <a href="{{ url('blog/'.$blog->id.'/edit') }}">Edit</a> | 

@@ -29,6 +29,7 @@
                         <th>#</th>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Photo</th>
                         <th>Phone</th>
                         <!-- <th>Action</th> -->
                     </thead>
@@ -43,6 +44,7 @@
                                 <td>{{ $loop->index + 1 }}</td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>{{ $user->image->name ?? '' }}</td>
                                 <td>{{ $user->phone->phone_number ?? '-'}}</td>
                                 <!-- <td>
                                     <a href="{{ url('user/'.$user->id.'/detail') }}">View</a> | 
