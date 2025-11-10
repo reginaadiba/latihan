@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BlogController;
@@ -50,3 +51,4 @@ Route::post('/comment/{blog_id}', [CommentController::class, 'store']);
 //route user controller
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/images', [ImageController::class, 'index']);
+Route::get('/articles', [ArticleController::class, 'index']);
