@@ -26,7 +26,7 @@ class BlogController extends Controller
             // ->withTrashed()
             ->orderBy('id', 'asc')
             ->paginate(10);
-
+        // return auth()->user();
         // return $blogs;
 
         // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
