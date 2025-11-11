@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureTokenIsValid;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
@@ -7,10 +8,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
+use App\Models\Phone;
 
 //index
 Route::get('/', function () {
-    return view('index');
+    return view('welcome');
 });
 
 Route::get('/blog', function(){
@@ -36,6 +38,8 @@ Route::get('/blog', function(){
 //     return redirect()->route('blog');
 // });
 
+
+
 Route::middleware('auth')->group(function(){
     //route blog controller
     Route::get('/hitung', [BlogController::class, 'hitung']);
@@ -50,6 +54,12 @@ Route::middleware('auth')->group(function(){
 
     Route::post('/comment/{blog_id}', [CommentController::class, 'store']);
     Route::get('/users', [UserController::class, 'index']);
+    
+    Route::get('/phones', function() {
+        $phones = Phone::with('user')->get();
+        return $phones;
+    })->middleware('tokenvalid');
+
     Route::get('/images', [ImageController::class, 'index']);
     Route::get('/articles', [ArticleController::class, 'index']);
 
