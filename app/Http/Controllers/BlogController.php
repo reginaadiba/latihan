@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Blog;
 use App\Models\Tag;
+use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 class BlogController extends Controller
@@ -103,6 +104,20 @@ class BlogController extends Controller
         //Eloquent hanya find atau findOrFail
         $tags = Tag::all();
         $blog = Blog::with('tags')->findOrFail($id);
+        
+        //gate
+        // Cara 1
+        // if(!Gate::allows('update-blog', $blog)) {
+        //     abort(403);
+        // }
+        // Cara 2
+        // Gate::authorize('update-blog', $blog);
+        // Cara 3
+        $response = Gate::inspect('update-blog', $blog);
+        if (!$response->allowed()) {
+            abort(403, $response->message());
+        }
+        
         return view('blog-edit', [
             'blog' => $blog,
             'tags' => $tags
