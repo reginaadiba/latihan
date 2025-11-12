@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -27,10 +28,17 @@ class BlogController extends Controller
             // ->withTrashed()
             ->orderBy('id', 'asc')
             ->paginate(10);
+        // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
+        
+        //policy
+        // if ($request->user()->cannot('viewAny', Blog::class)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('viewAny', Blog::class);
+
         // return auth()->user();
         // return $blogs;
-
-        // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
         return view('blog', [
             'blogs' => $blogs,
             'title' => $title
@@ -59,7 +67,7 @@ class BlogController extends Controller
         // ]);
 
         // Jika nama variable input tidak sama dengan database
-        // ex: 
+        // ex:
         // $blog = new Blog();
         // $blog->title = $request->title;
         // $blog->description = $request->keterangan;
@@ -70,7 +78,18 @@ class BlogController extends Controller
         //      'description => $request->keterangan
         // ]);
 
+        //upload image
+        // buat migrasi  add_image_column_to_blogs_table => colstring 'image' -> nullable 255 after description
+        if ($request->file('image_file')) {
+            $file = $request->file('image_file');
+            $name = $file->hashName();
+            Storage::putFileAs('images', $file, $name);
+
+            $request['image'] = $name;
+        }
+
         //Eloquent ORM
+        $request['author_id'] = auth()->id();
         $blog = Blog::create($request->all());
         $blog->tags()->attach($request->tags);
 
@@ -88,13 +107,13 @@ class BlogController extends Controller
 
         //Eloquent hanya find atau findOrFail
         $blog = Blog::with(['comments', 'tags'])->findOrFail($id);
-        
+
         return view('blog-detail', [
             'blog' => $blog
         ]);
     }
 
-    function edit($id)
+    function edit(Request $request, $id)
     {
         // $blog = DB::table('blogs')->where('id', $id)->first();
         // if (!$blog) {
@@ -104,7 +123,7 @@ class BlogController extends Controller
         //Eloquent hanya find atau findOrFail
         $tags = Tag::all();
         $blog = Blog::with('tags')->findOrFail($id);
-        
+
         //gate
         // Cara 1
         // if(!Gate::allows('update-blog', $blog)) {
@@ -113,11 +132,18 @@ class BlogController extends Controller
         // Cara 2
         // Gate::authorize('update-blog', $blog);
         // Cara 3
-        $response = Gate::inspect('update-blog', $blog);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
-        
+        // $response = Gate::inspect('update-blog', $blog);
+        // if (!$response->allowed()) {
+        //     abort(403, $response->message());
+        // }
+
+        //policy
+        // if ($request->user()->cannot('update', $blog)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('update', $blog);
+
         return view('blog-edit', [
             'blog' => $blog,
             'tags' => $tags
@@ -141,6 +167,14 @@ class BlogController extends Controller
 
         //Eloquent
         $blog = Blog::findOrFail($id);
+
+        //policy
+        // if ($request->user()->cannot('update', $blog)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('update', $blog);
+
         //detach tags lama
         // $blog->tags()->detach($blog->tags);
         //attach tags baru

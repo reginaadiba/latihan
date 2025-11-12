@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Middleware\EnsureTokenIsValid;
+use App\Models\Phone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
-use App\Models\Phone;
+use App\Http\Middleware\EnsureTokenIsValid;
 
 //index
 Route::get('/', function () {
@@ -55,6 +57,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/comment/{blog_id}', [CommentController::class, 'store']);
     Route::get('/users', [UserController::class, 'index']);
 
+
     Route::get('/phones', function() {
         $phones = Phone::with('user')->get();
         return $phones;
@@ -70,6 +73,48 @@ Route::middleware('guest')->group(function(){
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticating']);
 });
+
+
+
+// Upload Image
+    Route::get('/upload', function(){
+        // local akan disimpan di storage/app/private nama file example.txt -> isinya 'contents'
+        // public akan disimpan di storage/app/public
+        // Storage::put('example.txt', 'contents'); -> akan disimpan secara default di private (sesuai setting default filesystem atau env/filesystem_disk)
+        Storage::disk('public')->put('public1.txt', 'public nih');
+    });
+
+    //cara menampilkan file yg sudah di upload
+    Route::get('/thefile', function() {
+        // Cara 1:
+        // return asset('storage/example.txt');
+        //output => 'http://latihan.test/storage/example.txt' (kalo dibuka akan forbidden krn storage tidak boleh diakses dari luar)
+        //solusi jalankan => php artisan storage:link => setelah berhasil akan muncul folder storage di folder public
+        //di folder public akan langsung terisi file yg diupload dari disk public (bukan local atau private)
+        //kalo sudah di-link-kan (storage:link) maka url output tadi akan bisa diakses
+
+        // Cara 2:
+        return Storage::url('public1.txt');
+        //output => 'http://localhost/storage/example.txt', supaya jadi latihan.test => edit file env (APP_URL => latihan.test)
+    });
+
+    //upload dengan form
+    Route::get('/upload-image', function() {
+        return view('upload-image');
+    });
+
+    Route::post('/upload-image', function(Request $request) {
+        // return $request->file('image'); //test upload
+        //images = nama folder
+        $file = $request->file('image');
+        $ext = $file->extension();
+        $path = Storage::putFile('images', $file); //->nama file akan random
+        // $path = Storage::putFileAs('images', $file, 'delima.' . $ext);
+
+        return $path;
+        //akan error path => stop laragon -> klik kanan pilih php -> php.ini -> ganti upload_tmp_dir = C:/laragon/tmp -> save + start laragon
+        // upload ulang -> akan dapat respon letak file -> langsung buka dengan laravel.test/storage/respon
+    });
 
 // setting env dg mailtrap
 // mail_from_address latihan@example.com

@@ -71,9 +71,13 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    <a href="{{ url('blog/'.$blog->id.'/detail') }}">View</a> | 
-                                    <a href="{{ url('blog/'.$blog->id.'/edit') }}">Edit</a> | 
-                                    <a href="{{ url('blog/'.$blog->id.'/delete') }}">Delete</a>
+                                    <a href="{{ url('blog/'.$blog->id.'/detail') }}">View</a> 
+                                    @can('update', $blog)
+                                    | <a href="{{ url('blog/'.$blog->id.'/edit') }}">Edit</a> 
+                                    @endcan
+                                    @can('delete', $blog)
+                                    | <a href="{{ url('blog/'.$blog->id.'/delete') }}">Delete</a>
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach
