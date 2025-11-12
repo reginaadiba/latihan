@@ -47,9 +47,11 @@ class BlogPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Blog $blog): bool
+    public function delete(User $user, Blog $blog): Response
     {
-        return false;
+        return $user->id == $blog->author_id
+            ? Response::allow()
+            : Response::deny('you must be the author to delete this blog');
     }
 
     /**

@@ -18,7 +18,10 @@
             <div class="blog-body">
                 @if ($blog->image)
                 <div class="my-3">
-                    <img src="{{asset('storage/images/'.$blog->image)}}" alt="">
+                    <img src="{{asset('storage/images/'.$blog->image)}}" 
+                        class="img-fluid rounded object-fit-cover w-100" 
+                        style="max-width: 400px; height: 250px;"
+                        alt="{{ $blog->title }}">
                 </div>
                 @endif
 

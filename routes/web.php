@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Middleware\EnsureTokenIsValid;
+use App\Models\Phone;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
@@ -9,7 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
-use App\Models\Phone;
+use App\Http\Middleware\EnsureTokenIsValid;
 
 //index
 Route::get('/', function () {
@@ -64,11 +65,22 @@ Route::middleware('auth')->group(function(){
     Route::get('/images', [ImageController::class, 'index']);
     Route::get('/articles', [ArticleController::class, 'index']);
 
+    Route::get('/logout', [AuthController::class, 'logout']);
+});
+
+Route::middleware('guest')->group(function(){
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'authenticating']);
+});
+
+
+
+// Upload Image
     Route::get('/upload', function(){
         // local akan disimpan di storage/app/private nama file example.txt -> isinya 'contents'
         // public akan disimpan di storage/app/public
         // Storage::put('example.txt', 'contents'); -> akan disimpan secara default di private (sesuai setting default filesystem atau env/filesystem_disk)
-        Storage::disk('local')->put('example.txt', 'contents');
+        Storage::disk('public')->put('public1.txt', 'public nih');
     });
 
     //cara menampilkan file yg sudah di upload
@@ -81,7 +93,7 @@ Route::middleware('auth')->group(function(){
         //kalo sudah di-link-kan (storage:link) maka url output tadi akan bisa diakses
 
         // Cara 2:
-        return Storage::url('example.txt');
+        return Storage::url('public1.txt');
         //output => 'http://localhost/storage/example.txt', supaya jadi latihan.test => edit file env (APP_URL => latihan.test)
     });
 
@@ -95,18 +107,10 @@ Route::middleware('auth')->group(function(){
         //images = nama folder
         $file = $request->file('image');
         $ext = $file->extension();
-        // $path = Storage::putFile('images', $file); //->nama file akan random
-        $path = Storage::putFileAs('images', $file, 'image1.' . $ext);
+        $path = Storage::putFile('images', $file); //->nama file akan random
+        // $path = Storage::putFileAs('images', $file, 'delima.' . $ext);
 
         return $path;
         //akan error path => stop laragon -> klik kanan pilih php -> php.ini -> ganti upload_tmp_dir = C:/laragon/tmp -> save + start laragon
         // upload ulang -> akan dapat respon letak file -> langsung buka dengan laravel.test/storage/respon
     });
-
-    Route::get('/logout', [AuthController::class, 'logout']);
-});
-
-Route::middleware('guest')->group(function(){
-    Route::get('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/login', [AuthController::class, 'authenticating']);
-});

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -88,6 +89,7 @@ class BlogController extends Controller
         }
 
         //Eloquent ORM
+        $request['author_id'] = auth()->id();
         $blog = Blog::create($request->all());
         $blog->tags()->attach($request->tags);
 

@@ -38,7 +38,7 @@
                         {{ old('description') }}
                     </textarea>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mt-3">
                     <input type="file" name="image_file" class="form-control" >
                 </div>
                 <div class="col-md-6 mt-3">
