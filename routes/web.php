@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function(){
 
     Route::post('/comment/{blog_id}', [CommentController::class, 'store']);
     Route::get('/users', [UserController::class, 'index']);
-    
+
     Route::get('/phones', function() {
         $phones = Phone::with('user')->get();
         return $phones;
@@ -70,3 +70,31 @@ Route::middleware('guest')->group(function(){
     Route::get('/login', [AuthController::class, 'login'])->name('login');
     Route::post('/login', [AuthController::class, 'authenticating']);
 });
+
+// setting env dg mailtrap
+// mail_from_address latihan@example.com
+// mail_name_from latihan
+// lalu jalankan: php artisan make:mail WelcomeMail -> akan muncul folder app/mail
+// buka WelcomeMail lalu dibagian content -> return new Content(view: 'mails.welcome'); -> buat folder mails di dalam folder view lalu buat nama file welcome.blade.php
+
+Route::get('/send-welcome-mail', function() {
+    $data = [
+        'email' => 'contoh@email.com',
+        'password' => '123456'
+    ]
+    Mail::to('recipient@mail.com')->send(new WelcomeMail($data));
+});
+
+//di WelcomeMail envelope tambahkan:
+// from: new Address('jeffreyan@example.com', 'Jeffreyan'), (ini untuk mengganti yg global di env)
+// ada jg replyTo
+// replyTo: [
+// new Address('admin-latihan@example.com', 'Admin Latihan')
+// ],
+
+// jika ada $data => isi di dalam construct => public $data (kalo public bisa langsung digunakan)
+// jika protected $data hrs menambahkan di content
+// ex: view: 'mails.welcome', with: ['email' => $this->data['email], 'password' => $this->data['password]]
+
+//attachment di mail => masukkan di return fungsi attachment
+// Attachment::fromPath(Storage::url('images/image1.jpg)) //attachment bisa di rename nama jg -> liat dokumentasi
