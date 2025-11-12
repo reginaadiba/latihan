@@ -43,6 +43,9 @@
       </div>
       <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
+    <div class="text-center mt-3">
+                Don't have Account? <a href="/register">Sign Up</a>
+            </div>
     @if ($errors->any())
         <div class="alert alert-danger mt-3">
             <ul>
