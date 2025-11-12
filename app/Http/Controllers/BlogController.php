@@ -27,10 +27,17 @@ class BlogController extends Controller
             // ->withTrashed()
             ->orderBy('id', 'asc')
             ->paginate(10);
+        // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
+        
+        //policy
+        // if ($request->user()->cannot('viewAny', Blog::class)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('viewAny', Blog::class);
+
         // return auth()->user();
         // return $blogs;
-
-        // untuk menampilkan data yg disoftdelete gunakan ->withTrashed()
         return view('blog', [
             'blogs' => $blogs,
             'title' => $title
@@ -94,7 +101,7 @@ class BlogController extends Controller
         ]);
     }
 
-    function edit($id)
+    function edit(Request $request, $id)
     {
         // $blog = DB::table('blogs')->where('id', $id)->first();
         // if (!$blog) {
@@ -113,11 +120,18 @@ class BlogController extends Controller
         // Cara 2
         // Gate::authorize('update-blog', $blog);
         // Cara 3
-        $response = Gate::inspect('update-blog', $blog);
-        if (!$response->allowed()) {
-            abort(403, $response->message());
-        }
-        
+        // $response = Gate::inspect('update-blog', $blog);
+        // if (!$response->allowed()) {
+        //     abort(403, $response->message());
+        // }
+
+        //policy
+        // if ($request->user()->cannot('update', $blog)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('update', $blog);
+
         return view('blog-edit', [
             'blog' => $blog,
             'tags' => $tags
@@ -141,6 +155,14 @@ class BlogController extends Controller
 
         //Eloquent
         $blog = Blog::findOrFail($id);
+
+        //policy
+        // if ($request->user()->cannot('update', $blog)) {
+        //     abort (403);
+        // }
+        // custom message policy
+        Gate::authorize('update', $blog);
+
         //detach tags lama
         // $blog->tags()->detach($blog->tags);
         //attach tags baru

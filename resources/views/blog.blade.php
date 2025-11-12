@@ -72,7 +72,9 @@
                                 </td>
                                 <td>
                                     <a href="{{ url('blog/'.$blog->id.'/detail') }}">View</a> | 
+                                    @can('update', $blog)
                                     <a href="{{ url('blog/'.$blog->id.'/edit') }}">Edit</a> | 
+                                    @endcan
                                     <a href="{{ url('blog/'.$blog->id.'/delete') }}">Delete</a>
                                 </td>
                             </tr>
