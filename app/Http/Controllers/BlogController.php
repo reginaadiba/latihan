@@ -59,7 +59,7 @@ class BlogController extends Controller
         // ]);
 
         // Jika nama variable input tidak sama dengan database
-        // ex: 
+        // ex:
         // $blog = new Blog();
         // $blog->title = $request->title;
         // $blog->description = $request->keterangan;
@@ -69,6 +69,16 @@ class BlogController extends Controller
         //      'title' => $request->title,
         //      'description => $request->keterangan
         // ]);
+
+        //upload image
+        // buat migrasi  add_image_column_to_blogs_table => colstring 'image' -> nullable 255 after description
+        if ($request->file('image_file')) {
+            $file = $request->file('image_file');
+            $name = $file->hashName();
+            Storage::putFileAs('images', $file, $name);
+
+            $request['image'] = $name;
+        }
 
         //Eloquent ORM
         $blog = Blog::create($request->all());
@@ -88,7 +98,7 @@ class BlogController extends Controller
 
         //Eloquent hanya find atau findOrFail
         $blog = Blog::with(['comments', 'tags'])->findOrFail($id);
-        
+
         return view('blog-detail', [
             'blog' => $blog
         ]);
@@ -104,7 +114,7 @@ class BlogController extends Controller
         //Eloquent hanya find atau findOrFail
         $tags = Tag::all();
         $blog = Blog::with('tags')->findOrFail($id);
-        
+
         //gate
         // Cara 1
         // if(!Gate::allows('update-blog', $blog)) {
@@ -117,7 +127,7 @@ class BlogController extends Controller
         if (!$response->allowed()) {
             abort(403, $response->message());
         }
-        
+
         return view('blog-edit', [
             'blog' => $blog,
             'tags' => $tags
