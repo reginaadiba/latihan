@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Page</title>
+  <title>Reset Password</title>
   <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -31,26 +31,15 @@
 
   <div class="card p-4" style="width: 100%; max-width: 400px;">
     <h4 class="text-center mb-4">Reset Password</h4>
-    <!-- Reset Password Form -->
-    <form action="login" method="POST">
+    <form action="/forgot-password" method="POST">
         @csrf
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
         <input name="email" type="email" class="form-control" id="email" placeholder="Enter your email" required>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input name="password" type="password" class="form-control" id="password" placeholder="Enter your password" required>
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <button type="submit" class="btn btn-primary w-100">Send</button>
     </form>
-    <div class="text-center mt-3">
-      Don't have Account? <a href="/register">Sign Up</a>
-    </div>
 
-    <div class="text-center mt-3">
-      <a href="/forgot-password">Forgot Password</a>
-    </div>
 
     @if ($errors->any())
         <div class="alert alert-danger mt-3">
@@ -63,7 +52,7 @@
     @endif
 
     @if (session('status'))
-        <div class="alert alert-succeess mt-3">
+        <div class="alert alert-succeess">
             {{ session('status') }}
         </div>
     @endif

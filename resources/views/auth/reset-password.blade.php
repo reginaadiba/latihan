@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Page</title>
+  <title>Reset Password Page</title>
   <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
@@ -31,8 +31,7 @@
 
   <div class="card p-4" style="width: 100%; max-width: 400px;">
     <h4 class="text-center mb-4">Reset Password</h4>
-    <!-- Reset Password Form -->
-    <form action="login" method="POST">
+    <form action="/reset-password" method="POST">
         @csrf
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
@@ -42,15 +41,15 @@
         <label for="password" class="form-label">Password</label>
         <input name="password" type="password" class="form-control" id="password" placeholder="Enter your password" required>
       </div>
-      <button type="submit" class="btn btn-primary w-100">Login</button>
+      <div class="mb-3">
+        <label for="password_confirmation" class="form-label">Repeat Password</label>
+        <input name="password_confirmation" type="password" class="form-control" id="password_confirmation" placeholder="Re-Enter your password" required>
+      </div>
+      <div class="mb-3">
+        <input name="token" type="hidden" class="form-control" id="token" value="{{ $token }}" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Send</button>
     </form>
-    <div class="text-center mt-3">
-      Don't have Account? <a href="/register">Sign Up</a>
-    </div>
-
-    <div class="text-center mt-3">
-      <a href="/forgot-password">Forgot Password</a>
-    </div>
 
     @if ($errors->any())
         <div class="alert alert-danger mt-3">
