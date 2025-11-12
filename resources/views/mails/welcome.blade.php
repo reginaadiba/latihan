@@ -9,6 +9,6 @@
 <body>
     <h1>Welcome</h1>
     <br>
-    <h2>Email: {{$data['email']}}</h2>
+    <h2>Email: {{$email}}</h2>
 </body>
 </html>

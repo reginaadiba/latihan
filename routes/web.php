@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\Phone;
+use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
+use App\Jobs\ProcessWelcomeMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
@@ -88,10 +91,6 @@ Route::middleware('guest')->group(function(){
     Route::get('/thefile', function() {
         // Cara 1:
         // return asset('storage/example.txt');
-        //output => 'http://latihan.test/storage/example.txt' (kalo dibuka akan forbidden krn storage tidak boleh diakses dari luar)
-        //solusi jalankan => php artisan storage:link => setelah berhasil akan muncul folder storage di folder public
-        //di folder public akan langsung terisi file yg diupload dari disk public (bukan local atau private)
-        //kalo sudah di-link-kan (storage:link) maka url output tadi akan bisa diakses
 
         // Cara 2:
         return Storage::url('public1.txt');
@@ -116,13 +115,16 @@ Route::middleware('guest')->group(function(){
         // upload ulang -> akan dapat respon letak file -> langsung buka dengan laravel.test/storage/respon
     });
 
-// setting env dg mailtrap
-// mail_from_address latihan@example.com
-// mail_name_from latihan
-// lalu jalankan: php artisan make:mail WelcomeMail -> akan muncul folder app/mail
-// buka WelcomeMail lalu dibagian content -> return new Content(view: 'mails.welcome'); -> buat folder mails di dalam folder view lalu buat nama file welcome.blade.php
 
+// Mail & Queue
 Route::get('/send-welcome-mail', function() {
+    // $user = [
+    //     'username' => 'haechandeul',
+    //     'email' => 'haechan@email.com', 
+    //     'password' => '123456', 
+    //     'image' => 'image1.jpg'
+    // ];
+    // Mail::to($user['email'])->send(new WelcomeMail($user));
     $users = [
         ['email' => 'haechan@email.com', 'password' => '123456'],
         ['email' => 'mark@email.com', 'password' => '123456'],
@@ -137,34 +139,7 @@ Route::get('/send-welcome-mail', function() {
     ];
 
     foreach ($users as $user) {
-        // Mail::to($user['email'])->send(new WelcomeMail($user));
-        // sleep(1);
-
         // queue
-        ProcessWelcomeMail::dispatch($user);
+        ProcessWelcomeMail::dispatch($user)->onQueue('send-email');
     }
-
-    // for ($i = 0; $i < 11; $i++) {
-    //     Mail::to('recipient'.$i.'@mail.com')->send(new WelcomeMail($data));
-    //     sleep(1);
-    // }
 });
-
-//di WelcomeMail envelope tambahkan:
-// from: new Address('jeffreyan@example.com', 'Jeffreyan'), (ini untuk mengganti yg global di env)
-// ada jg replyTo
-// replyTo: [
-// new Address('admin-latihan@example.com', 'Admin Latihan')
-// ],
-
-// jika ada $data => isi di dalam construct => public $data (kalo public bisa langsung digunakan)
-// jika protected $data hrs menambahkan di content
-// ex: view: 'mails.welcome', with: ['email' => $this->data['email], 'password' => $this->data['password]]
-
-//attachment di mail => masukkan di return fungsi attachment
-// Attachment::fromPath(Storage::url('images/image1.jpg)) //attachment bisa di rename nama jg -> liat dokumentasi
-
-
-// mail queue
-// lihat di env -> queue connection = database
-// buat queue => php artisan make:job ProcessWelcomeMail -> file app\jobs
