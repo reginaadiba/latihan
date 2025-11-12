@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\Phone;
+use App\Mail\WelcomeMail;
 use Illuminate\Http\Request;
+use App\Jobs\ProcessWelcomeMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\AuthController;
@@ -57,6 +60,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/comment/{blog_id}', [CommentController::class, 'store']);
     Route::get('/users', [UserController::class, 'index']);
 
+
     Route::get('/phones', function() {
         $phones = Phone::with('user')->get();
         return $phones;
@@ -87,10 +91,6 @@ Route::middleware('guest')->group(function(){
     Route::get('/thefile', function() {
         // Cara 1:
         // return asset('storage/example.txt');
-        //output => 'http://latihan.test/storage/example.txt' (kalo dibuka akan forbidden krn storage tidak boleh diakses dari luar)
-        //solusi jalankan => php artisan storage:link => setelah berhasil akan muncul folder storage di folder public
-        //di folder public akan langsung terisi file yg diupload dari disk public (bukan local atau private)
-        //kalo sudah di-link-kan (storage:link) maka url output tadi akan bisa diakses
 
         // Cara 2:
         return Storage::url('public1.txt');
@@ -114,3 +114,32 @@ Route::middleware('guest')->group(function(){
         //akan error path => stop laragon -> klik kanan pilih php -> php.ini -> ganti upload_tmp_dir = C:/laragon/tmp -> save + start laragon
         // upload ulang -> akan dapat respon letak file -> langsung buka dengan laravel.test/storage/respon
     });
+
+
+// Mail & Queue
+Route::get('/send-welcome-mail', function() {
+    // $user = [
+    //     'username' => 'haechandeul',
+    //     'email' => 'haechan@email.com', 
+    //     'password' => '123456', 
+    //     'image' => 'image1.jpg'
+    // ];
+    // Mail::to($user['email'])->send(new WelcomeMail($user));
+    $users = [
+        ['email' => 'haechan@email.com', 'password' => '123456'],
+        ['email' => 'mark@email.com', 'password' => '123456'],
+        ['email' => 'jungwoo@email.com', 'password' => '123456'],
+        ['email' => 'winwin@email.com', 'password' => '123456'],
+        ['email' => 'jaehyun@email.com', 'password' => '123456'],
+        ['email' => 'doyoung@email.com', 'password' => '123456'],
+        ['email' => 'yuta@email.com', 'password' => '123456'],
+        ['email' => 'taeyong@email.com', 'password' => '123456'],
+        ['email' => 'johnny@email.com', 'password' => '123456'],
+        ['email' => 'giselle@email.com', 'password' => '123456'],
+    ];
+
+    foreach ($users as $user) {
+        // queue
+        ProcessWelcomeMail::dispatch($user)->onQueue('send-email');
+    }
+});
