@@ -16,6 +16,12 @@
         <div class="mt-5">
             <h2 class="text-center">Blog Detail {{ $blog->id }}</h2>
             <div class="blog-body">
+                @if ($blog->image)
+                <div class="my-3">
+                    <img src="{{asset('storage/images/'.$blog->image)}}" alt="">
+                </div>
+                @endif
+
                 <p>
                     {{ $blog->description }}
                 </p>
@@ -26,7 +32,7 @@
                     <span class="p-2 bg-secondary text-white rounded me-1">{{ $tag->name }}</span>
                     @endforeach
                 </div>
-                
+
                 <div class="d-flex flex-column align-items-end">
                     <div>{{ $blog->created_at }}</div>
                     <div>by {{ $blog->author->name ?? 'Admin'}}</div>
@@ -44,7 +50,7 @@
                     </ul>
                 </div>
             @endif
-            
+
             <h5>Comment :</h5>
             <form action="{{ url('comment/'.$blog->id) }}" method="POST">
                 @csrf
@@ -66,7 +72,7 @@
         </div>
 
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>
